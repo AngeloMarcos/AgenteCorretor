@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========== Custom Reset & Base ========== */
+
+html,
+body {
+  @apply bg-gray-100 text-gray-800 font-inter antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ========== Form Elements ========== */
+
+input,
+textarea,
+select,
+button {
+  @apply text-sm outline-none transition-all;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  @apply ring-2 ring-blue-500 ring-opacity-30;
+}
+
+/* ========== Buttons ========== */
+
+button {
+  @apply font-medium disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* ========== Headings ========== */
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-semibold text-gray-900;
+}
+
+/* ========== Cards ========== */
+
+.card {
+  @apply bg-white rounded shadow p-4;
+}
+
+/* ========== Utilities Extras (caso queira usar em componentes) ========== */
+
+.link {
+  @apply text-blue-600 hover:text-blue-800 transition-colors underline underline-offset-2;
+}
+
+.label {
+  @apply text-sm font-medium text-gray-700;
+}
