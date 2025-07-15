@@ -7,12 +7,13 @@ import { User } from './users/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      entities: [User],
-      synchronize: true,
-    }),
+   TypeOrmModule.forRoot({
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  autoLoadEntities: true,
+  synchronize: true,
+}),
+
     UsersModule,
     AuthModule,
   ],
