@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Layout from '../components/Layout';
 import withAuth from '../utils/withAuth';
-
+  import { salvarImovel } from '../utils/imovelStorage';
+  import { v4 as uuidv4 } from 'uuid';
 const schema = z.object({
   titulo: z.string().min(3, 'Título muito curto'),
   preco: z.string().min(1, 'Informe o preço'),
@@ -26,9 +27,7 @@ function CadastrarImovel() {
 
   const imagemPreview = watch('imagem');
 
- import { salvarImovel } from '../utils/imovelStorage';
-import { v4 as uuidv4 } from 'uuid';
-function onSubmit(data: FormData) {
+  function onSubmit(data: FormData) {
   const novoImovel = {
     id: uuidv4(),
     titulo: data.titulo,
