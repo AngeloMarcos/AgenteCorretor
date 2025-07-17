@@ -1,70 +1,68 @@
-// pages/cadastrar.tsx
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import Layout from '../components/Layout';
-import withAuth from '../utils/withAuth';
-  import { salvarImovel } from '../utils/imovelStorage';
-  import { v4 as uuidv4 } from 'uuid';
-const schema = z.object({
-  titulo: z.string().min(3, 'Título muito curto'),
-  preco: z.string().min(1, 'Informe o preço'),
-  descricao: z.string().min(5, 'Descrição muito curta'),
-  imagem: z.string().url('URL inválida'),
-});
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { fetchWithAuth } from '../utils/api';
 
-type FormData = z.infer<typeof schema>;
+export default function Cadastrar() {
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirma, setConfirma] = useState('');
+  const [erro, setErro] = useState('');
+  const [sucesso, setSucesso] = useState('');
+  const router = useRouter();
 
-function CadastrarImovel() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErro('');
+    setSucesso('');
 
-  const imagemPreview = watch('imagem');
+    if (senha !== confirma) {
+      setErro('As senhas não coincidem.');
+      return;
+    }
 
-  function onSubmit(data: FormData) {
-  const novoImovel = {
-    id: uuidv4(),
-    titulo: data.titulo,
-    preco: data.preco,
-    descricao: data.descricao,
-    imagem: data.imagem,
+    try {
+      await fetchWithAuth('/auth/register', 'POST', {
+        email,
+        password: senha,
+      });
+      setSucesso('Cadastro realizado com sucesso!');
+      setTimeout(() => router.push('/login'), 2000);
+    } catch (error: any) {
+      setErro(error.message || 'Erro ao cadastrar usuário.');
+    }
   };
-  salvarImovel(novoImovel);
-  alert('Imóvel cadastrado com sucesso!');
-}
 
   return (
-    <Layout>
-      <h1 className="text-2xl font-bold mb-6">Cadastrar Novo Imóvel</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded shadow max-w-xl space-y-4">
-        <input {...register('titulo')} placeholder="Título" className="w-full p-2 border rounded" />
-        {errors.titulo && <p className="text-red-500 text-sm">{errors.titulo.message}</p>}
-
-        <input {...register('preco')} placeholder="Preço" className="w-full p-2 border rounded" />
-        {errors.preco && <p className="text-red-500 text-sm">{errors.preco.message}</p>}
-
-        <textarea {...register('descricao')} placeholder="Descrição" className="w-full p-2 border rounded" />
-        {errors.descricao && <p className="text-red-500 text-sm">{errors.descricao.message}</p>}
-
-        <input {...register('imagem')} placeholder="URL da imagem" className="w-full p-2 border rounded" />
-        {errors.imagem && <p className="text-red-500 text-sm">{errors.imagem.message}</p>}
-
-        {imagemPreview && (
-          <img src={imagemPreview} alt="Preview" className="w-full h-48 object-cover rounded" />
-        )}
-
-        <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
-          Salvar Imóvel
+    <div className="max-w-sm mx-auto mt-16 bg-white p-6 rounded shadow">
+      <h1 className="text-xl font-bold mb-4">Cadastrar Corretor</h1>
+      {erro && <p className="text-red-500 text-sm mb-2">{erro}</p>}
+      {sucesso && <p className="text-green-600 text-sm mb-2">{sucesso}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="email"
+          placeholder="E-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="password"
+          placeholder="Confirme a senha"
+          value={confirma}
+          onChange={(e) => setConfirma(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+          Cadastrar
         </button>
       </form>
-    </Layout>
+    </div>
   );
 }
-
-export default withAuth(CadastrarImovel);
